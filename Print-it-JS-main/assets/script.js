@@ -19,10 +19,13 @@ const slides = [
 ];
 
 
-//Sélection des éléments du DOM pour les flèches et les bullets points
-const leftArrow = document.querySelector ('.arrow_left');
-const rightArrow = document.querySelector ('.arrow_right');
-const dotsContainer = document.querySelector('.dots');
+const leftArrow = document.querySelector ('.arrow_left'); //Sélection des éléments du DOM pour la flèche gauche
+const rightArrow = document.querySelector ('.arrow_right');  //Sélection des éléments du DOM pour la flèche droite
+const dotsContainer = document.querySelector('.dots'); //Sélection des éléments du DOM pour les bullets points
+const imageElement = document.querySelector('.banner-img'); // Sélection des éléments du DOM pour l'image de la bannière
+const tagLineElement = document.querySelector('#banner p'); // Sélection des éléments du DOM pour le texte de la tagline
+let currentSlideIndex = 0; // Index de la diapositive actuelle
+let autoSlideInterval; // variable pour stocker l'intervalle 
 
 
 // Création et ajout des points des bullets points dans le carousel
@@ -36,12 +39,6 @@ slides.forEach((slide, index) => {
 })
 
 
-// Sélection des éléments du DOM pour l'image de la bannière et le texte de la tagline
-const imageElement = document.querySelector('.banner-img');
-const tagLineElement = document.querySelector('#banner p');
-let currentSlideIndex = 0; // Index de la diapositive actuelle
-
-
 // Fonction pour afficher une diapositive spécifique
 function showSlide(index) {
 	imageElement.src = slides[index].image;   // Changer l'image affichée dans le carrousel
@@ -53,25 +50,43 @@ function showSlide(index) {
 	})
 }
 
-// Affiche la première diapositive au chargement
-showSlide(currentSlideIndex);
+
+// Fonction pour faire défiler automatiquement le carrousel toutes les 4 secondes
+function startAutoSlide() {
+	autoSlideInterval = setInterval(() => {
+		currentSlideIndex = (currentSlideIndex === slides.length - 1) ? 0 : currentSlideIndex + 1; // On passe au slide suivant
+		showSlide(currentSlideIndex); // Affiche le slide mis à jour
+	}, 4000); // Le carrousel défile toutes les 4000 ms (4 secondes)
+}
+
+
+// Fonction pour arreter le défilement automatique
+function stopAutoSlide() {
+	clearInterval(autoSlideInterval); // Arrete l'intervalle
+}
 
 
 // Événement pour la flèche gauche (précédente)
 leftArrow.addEventListener ('click', function() {
 	console.log("Flèche gauche cliquée"); 
-
+	stopAutoSlide(); // On arrete le défilement automatique
 	// Passe à la diapositive précédente, ou à la dernière si on est sur la première
 	currentSlideIndex = (currentSlideIndex === 0) ? slides.length - 1 : currentSlideIndex - 1; 
 	showSlide(currentSlideIndex);// Affiche la diapositive correspondante
+	startAutoSlide(); // On relance le défilement automatique après le clic
 });
 
 
 // Événement pour la flèche droite (suivante)
 rightArrow.addEventListener ('click', function() {
 	console.log("Flèche droite cliquée");
-
+	stopAutoSlide(); // On arrete le défilement automatique
 	// Passe à la diapositive suivante, ou à la première si on est sur la dernière
 	currentSlideIndex = (currentSlideIndex === slides.length - 1) ? 0 : currentSlideIndex + 1; 
 	showSlide(currentSlideIndex); // Affiche la diapositive correspondante
+	startAutoSlide(); // On relance le défilement automatique après le clic
 });
+
+
+// Lancer le défilement automatique 
+startAutoSlide();
